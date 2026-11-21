@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#090d1c">
+  <meta name="description" content="小小引力场：无失败惩罚的单指吞噬网页游戏。">
+  <title>小小引力场</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./game.js"></script>
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="game-canvas" aria-label="小小引力场游戏画面"></canvas>
+
+    <header class="hud top-hud" id="top-hud" aria-live="polite">
+      <div class="hud-chip">✦ <span id="hud-essence">0</span></div>
+      <div class="progress-card">
+        <div class="progress-copy"><span id="run-clock">探索中 · 00:00</span><span id="run-level">引力场 Lv.1</span></div>
+        <div class="progress-track"><span id="progress-fill"></span></div>
+      </div>
+      <div class="hud-chip best">↗ <span id="hud-best">0</span></div>
+    </header>
+    <footer class="hud bottom-hud" id="bottom-hud">
+      <span class="gesture-hint">按住并拖动引力场</span>
+      <button class="button soft" id="btn-settle">现在结算</button>
+    </footer>
+
+    <section class="screen active" id="screen-home" aria-labelledby="home-title">
+      <div class="panel home-panel">
+        <div class="orb-logo" aria-hidden="true"><span></span></div>
+        <p class="eyebrow">RELAXING ORBIT</p>
+        <h1 id="home-title">小小引力场</h1>
+        <p class="subtitle">拖动 · 吞噬 · 自由成长</p>
+        <p class="calm-note">没有失败条件。想停就结算，吞得越多收获越多。</p>
+        <div class="mode-grid" aria-label="两种成长模式">
+          <div class="mode-card"><strong>局内限时模式</strong><span>75 秒 · 随机临时强化</span></div>
+          <div class="mode-card permanent"><strong>永久成长模式</strong><span>星尘升级 · 每局保留</span></div>
+        </div>
+        <div class="stats-row">
+          <div><small>星尘</small><strong><span id="home-essence">0</span> ✦</strong></div>
+          <div><small>最高吞噬值</small><strong id="home-best">0</strong></div>
+        </div>
+        <p class="offline-note" id="offline-note" hidden></p>
+        <button class="button primary start-button" id="btn-start" type="button">开始限时模式 <span aria-hidden="true">→</span></button>
+        <div class="two-buttons">
+          <button class="button soft" id="btn-upgrades" type="button">永久模式 · 升级</button>
+          <button class="button soft" id="btn-help" type="button">玩法说明</button>
+        </div>
+        <div class="settings-row">
+          <small>本地存档 · 纯静态 · 无广告</small>
+          <button class="text-button" id="btn-haptics" type="button">震动：开</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-upgrades" aria-labelledby="upgrade-title">
+      <div class="panel modal-panel">
+        <div class="modal-heading">
+          <div><p class="eyebrow">PERMANENT GROWTH</p><h2 id="upgrade-title">永久升级</h2></div>
+          <div class="hud-chip">✦ <span id="upgrade-essence">0</span></div>
+        </div>
+        <p class="muted intro">用星尘提升下一局的初始能力。升级保存在本机浏览器。</p>
+        <div class="upgrade-list" id="upgrade-list"></div>
+        <div class="modal-actions"><button class="button soft" id="btn-upgrades-back" type="button">返回</button><button class="text-button danger" id="btn-reset-save" type="button">重置本地存档</button></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-help" aria-labelledby="help-title">
+      <div class="panel modal-panel help-panel">
+        <p class="eyebrow">HOW TO PLAY</p>
+        <h2 id="help-title">轻松吞噬，没有失败</h2>
+        <div class="help-list">
+          <p><b>01</b><span><strong>单指拖动</strong><br>移动引力场，靠近星尘并将其吸入。</span></p>
+          <p><b>02</b><span><strong>局内三选一</strong><br>积累能量后选择临时强化；选择时本局暂停，离开本局后清零。</span></p>
+          <p><b>03</b><span><strong>随时结算</strong><br>目标时长约 75 秒，也可以提前结束。</span></p>
+          <p><b>04</b><span><strong>永久成长</strong><br>永久模式中使用结算星尘升级，属性会保留到后续每一局。</span></p>
+        </div>
+        <button class="button primary full" id="btn-help-back" type="button">知道了</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-draft" aria-labelledby="draft-title">
+      <div class="panel modal-panel draft-panel">
+        <p class="eyebrow">RUN UPGRADE</p>
+        <h2 id="draft-title">引力场升级</h2>
+        <p class="muted intro">选择一项强化。选择期间本局暂停。</p>
+        <div class="draft-options" id="draft-options"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-result" aria-labelledby="result-title">
+      <div class="panel result-panel">
+        <p class="eyebrow">RUN COMPLETE</p>
+        <h2 id="result-title">这一局，收获不错</h2>
+        <p class="muted result-subtitle" id="result-subtitle">星尘已安全结算。</p>
+        <div class="reward-box"><span>本局星尘</span><strong>+<span id="result-reward">0</span> ✦</strong></div>
+        <div class="result-stats">
+          <div><small>吞噬价值</small><strong id="result-value">0</strong></div>
+          <div><small>吞噬物体</small><strong id="result-count">0</strong></div>
+          <div><small>局内强化</small><strong id="result-level">0</strong></div>
+          <div><small>探索时间</small><strong id="result-time">00:00</strong></div>
+        </div>
+        <div class="two-buttons"><button class="button soft" id="btn-result-home" type="button">回到首页</button><button class="button primary" id="btn-result-replay" type="button">再来一局 →</button></div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+</body>
+</html>
